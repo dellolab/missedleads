@@ -1,3 +1,7 @@
+"use client";
+import { useState } from "react";
+
+
 import ContactPopup from "../components/ContactPopup";
 
 const popupConfig = {

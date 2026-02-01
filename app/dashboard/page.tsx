@@ -38,7 +38,11 @@ export default function Dashboard() {
       <h1>Dashboard</h1>
       <label>
         Filter by urgency:
-        <select onChange={(e) => setFilter(e.target.value)} value={filter} style={{ marginLeft: "10px" }}>
+        <select
+          onChange={(e) => setFilter(e.target.value)}
+          value={filter}
+          style={{ marginLeft: "10px" }}
+        >
           <option value="">All</option>
           <option value="High">High</option>
           <option value="Medium">Medium</option>
@@ -74,5 +78,6 @@ export default function Dashboard() {
   );
 }
 
-const thStyle = { textAlign: "left", padding: "8px" };
-const tdStyle = { textAlign: "left", padding: "8px" };
+// ✅ Fix: Explicitly type the style objects
+const thStyle: React.CSSProperties = { textAlign: "left", padding: "8px" };
+const tdStyle: React.CSSProperties = { textAlign: "left", padding: "8px" };
