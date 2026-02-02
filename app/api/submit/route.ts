@@ -1,11 +1,6 @@
-export const runtime = "nodejs";
-
 import { createClient } from "@supabase/supabase-js";
 
-const supabase = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_ANON_KEY!
-);
+export const runtime = "nodejs";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -13,7 +8,11 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "Content-Type",
 };
 
-// ✅ OPTIONS MUST EXIST
+const supabase = createClient(
+  process.env.SUPABASE_URL!,
+  process.env.SUPABASE_ANON_KEY!
+);
+
 export async function OPTIONS() {
   return new Response(null, {
     status: 204,
@@ -21,7 +20,6 @@ export async function OPTIONS() {
   });
 }
 
-// ✅ POST
 export async function POST(req: Request) {
   try {
     const body = await req.json();
