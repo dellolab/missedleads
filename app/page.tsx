@@ -16,7 +16,7 @@ export default function HomePage() {
       {/* Your page content */}
 
       {/* Place the popup component anywhere — it will be fixed in bottom corner */}
-      <ContactPopup config={popupConfig} />
+      
     </div>
   );
 }

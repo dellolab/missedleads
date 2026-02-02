@@ -17,6 +17,7 @@
     overflow: "hidden",
     transition: "all 0.45s cubic-bezier(.4,0,.2,1)",
     transformOrigin: "bottom right",
+    cursor: "pointer",
   });
 
   document.body.appendChild(root);
@@ -32,7 +33,6 @@
     alignItems: "center",
     justifyContent: "center",
     fontWeight: "600",
-    cursor: "pointer",
   });
 
   root.appendChild(button);
@@ -71,8 +71,9 @@
 
   root.appendChild(panel);
 
-  /* ---------- Toggle ---------- */
-  root.onclick = () => {
+  /* ---------- Toggle ONLY on button click ---------- */
+  button.addEventListener("click", (e) => {
+    e.stopPropagation(); // prevent bubbling to root
     open = !open;
 
     if (open) {
@@ -103,7 +104,10 @@
         root.style.borderRadius = "18px";
       }, 200);
     }
-  };
+  });
+
+  /* ---------- Prevent closing when clicking inside panel ---------- */
+  panel.addEventListener("click", (e) => e.stopPropagation());
 
   /* ---------- Submit (NO POPUPS) ---------- */
   const form = panel.querySelector("form");
@@ -114,21 +118,16 @@
     const data = Object.fromEntries(new FormData(form).entries());
 
     try {
-      const res = await fetch("https://missedleads.vercel.app/api/submit", {
+      await fetch("https://missedleads.vercel.app/api/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
 
-      if (!res.ok) return;
-
-      form.innerHTML = `
-        <div style="padding:30px;text-align:center;font-size:14px;color:#333">
-          Thanks — we’ll be in touch.
-        </div>
-      `;
+      // optional: reset form silently
+      form.reset();
     } catch {
-      // intentionally silent — no alerts, no logs
+      // intentionally silent
     }
   };
 })();
