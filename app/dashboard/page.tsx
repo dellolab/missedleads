@@ -6,7 +6,7 @@ interface Submission {
   name?: string;
   email?: string;
   phone?: string;
-  urgency?: string;
+  urgency?: "High" | "Medium" | "Low";
   message?: string;
   created_at: string;
 }
@@ -21,10 +21,22 @@ export default function Dashboard() {
       window.location.href = "/dashboard/login";
       return;
     }
+
     fetch("/api/getSubmissions")
-      .then((res) => res.json())
+      .then(async (res) => {
+        if (!res.ok) {
+          const text = await res.text();
+          console.error("API Error:", text);
+          throw new Error("Failed to fetch submissions");
+        }
+        return res.json();
+      })
       .then((data) => {
         setSubmissions(data.submissions || []);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error(err);
         setLoading(false);
       });
   }, []);
@@ -36,6 +48,7 @@ export default function Dashboard() {
   return (
     <div style={{ padding: "20px" }}>
       <h1>Dashboard</h1>
+
       <label>
         Filter by urgency:
         <select
@@ -78,6 +91,6 @@ export default function Dashboard() {
   );
 }
 
-// ✅ Fix: Explicitly type the style objects
+// ✅ Type-safe styles
 const thStyle: React.CSSProperties = { textAlign: "left", padding: "8px" };
 const tdStyle: React.CSSProperties = { textAlign: "left", padding: "8px" };
