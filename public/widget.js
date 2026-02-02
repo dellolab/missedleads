@@ -19,7 +19,6 @@
     transformOrigin: "bottom right",
     cursor: "pointer",
   });
-
   document.body.appendChild(root);
 
   /* ---------- Button ---------- */
@@ -34,7 +33,6 @@
     justifyContent: "center",
     fontWeight: "600",
   });
-
   root.appendChild(button);
 
   /* ---------- Panel ---------- */
@@ -47,14 +45,21 @@
     transform: "scale(0.9) translateY(20px)",
     transition: "all 0.35s cubic-bezier(.4,0,.2,1)",
     pointerEvents: "none",
+    position: "relative",
+    display: "flex",
+    flexDirection: "column",
   });
 
   panel.innerHTML = `
-    <div style="padding:14px;border-bottom:1px solid #eee;font-weight:600">
-      Contact us
+    <div style="padding:14px;border-bottom:1px solid #eee;font-weight:600; display:flex; justify-content:space-between; align-items:center">
+      <span>Contact us</span>
+      <button id="close-btn" type="button"
+        style="background:#eee;border:none;border-radius:6px;padding:4px 8px;cursor:pointer;font-size:12px">
+        Close
+      </button>
     </div>
 
-    <form style="padding:14px;display:flex;flex-direction:column;gap:8px">
+    <form style="padding:14px;display:flex;flex-direction:column;gap:8px;flex:1">
       <input name="name" placeholder="Name" required style="padding:8px;border:1px solid #ccc;border-radius:6px">
       <input name="email" placeholder="Email" required style="padding:8px;border:1px solid #ccc;border-radius:6px">
       <input name="phone" placeholder="Phone" style="padding:8px;border:1px solid #ccc;border-radius:6px">
@@ -68,53 +73,67 @@
       </button>
     </form>
   `;
-
   root.appendChild(panel);
+
+  const closeBtn = panel.querySelector("#close-btn");
 
   /* ---------- Toggle ONLY on button click ---------- */
   button.addEventListener("click", (e) => {
-    e.stopPropagation(); // prevent bubbling to root
-    open = !open;
-
-    if (open) {
-      root.style.width = "320px";
-      root.style.height = "420px";
-      root.style.background = "white";
-      root.style.borderRadius = "16px";
-
-      button.style.opacity = "0";
-
-      setTimeout(() => {
-        button.style.display = "none";
-        panel.style.opacity = "1";
-        panel.style.transform = "scale(1) translateY(0)";
-        panel.style.pointerEvents = "auto";
-      }, 120);
-    } else {
-      panel.style.opacity = "0";
-      panel.style.transform = "scale(0.9) translateY(20px)";
-      panel.style.pointerEvents = "none";
-
-      setTimeout(() => {
-        button.style.display = "flex";
-        button.style.opacity = "1";
-        root.style.width = "60px";
-        root.style.height = "60px";
-        root.style.background = "#0070f3";
-        root.style.borderRadius = "18px";
-      }, 200);
+    e.stopPropagation();
+    if (!open) {
+      open = true;
+      openWidget();
     }
   });
 
-  /* ---------- Prevent closing when clicking inside panel ---------- */
+  /* ---------- Close via Close button ---------- */
+  closeBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (open) {
+      open = false;
+      closeWidget();
+    }
+  });
+
+  /* ---------- Panel click does NOT close ---------- */
   panel.addEventListener("click", (e) => e.stopPropagation());
+
+  /* ---------- Functions to open/close widget ---------- */
+  function openWidget() {
+    root.style.width = "320px";
+    root.style.height = "420px";
+    root.style.background = "white";
+    root.style.borderRadius = "16px";
+
+    button.style.opacity = "0";
+
+    setTimeout(() => {
+      button.style.display = "none";
+      panel.style.opacity = "1";
+      panel.style.transform = "scale(1) translateY(0)";
+      panel.style.pointerEvents = "auto";
+    }, 120);
+  }
+
+  function closeWidget() {
+    panel.style.opacity = "0";
+    panel.style.transform = "scale(0.9) translateY(20px)";
+    panel.style.pointerEvents = "none";
+
+    setTimeout(() => {
+      button.style.display = "flex";
+      button.style.opacity = "1";
+      root.style.width = "60px";
+      root.style.height = "60px";
+      root.style.background = "#0070f3";
+      root.style.borderRadius = "18px";
+    }, 200);
+  }
 
   /* ---------- Submit (NO POPUPS) ---------- */
   const form = panel.querySelector("form");
-
   form.onsubmit = async (e) => {
     e.preventDefault();
-
     const data = Object.fromEntries(new FormData(form).entries());
 
     try {
@@ -124,8 +143,7 @@
         body: JSON.stringify(data),
       });
 
-      // optional: reset form silently
-      form.reset();
+      form.reset(); // silently reset the form
     } catch {
       // intentionally silent
     }
