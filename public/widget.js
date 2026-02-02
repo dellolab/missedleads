@@ -1,90 +1,134 @@
-(function() {
-  // Floating button
-  const button = document.createElement("button");
-  button.innerText = "Contact us";
-  button.style.position = "fixed";
-  button.style.bottom = "20px";
-  button.style.right = "20px";
-  button.style.padding = "12px 20px";
-  button.style.background = "#0070f3";
-  button.style.color = "white";
-  button.style.border = "none";
-  button.style.borderRadius = "8px";
-  button.style.cursor = "pointer";
-  button.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
-  button.style.fontSize = "16px";
-  button.style.transition = "transform 0.2s ease";
-  button.onmouseover = () => (button.style.transform = "scale(1.05)");
-  button.onmouseout = () => (button.style.transform = "scale(1)");
+(function () {
+  let open = false;
 
-  document.body.appendChild(button);
+  /* ---------- Root ---------- */
+  const root = document.createElement("div");
+  Object.assign(root.style, {
+    position: "fixed",
+    bottom: "20px",
+    right: "20px",
+    width: "60px",
+    height: "60px",
+    background: "#0070f3",
+    borderRadius: "18px",
+    boxShadow: "0 12px 30px rgba(0,0,0,0.25)",
+    fontFamily: "system-ui, sans-serif",
+    zIndex: "9999",
+    overflow: "hidden",
+    transition: "all 0.45s cubic-bezier(.4,0,.2,1)",
+    transformOrigin: "bottom right",
+  });
 
-  let popup = null;
+  document.body.appendChild(root);
 
-  button.onclick = () => {
-    if (popup) { popup.remove(); popup = null; return; }
+  /* ---------- Button ---------- */
+  const button = document.createElement("div");
+  button.innerText = "Contact";
+  Object.assign(button.style, {
+    width: "100%",
+    height: "100%",
+    color: "white",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontWeight: "600",
+    cursor: "pointer",
+  });
 
-    popup = document.createElement("div");
-    popup.style.position = "fixed";
-    popup.style.bottom = "80px";
-    popup.style.right = "20px";
-    popup.style.width = "300px";
-    popup.style.maxWidth = "90%";
-    popup.style.background = "white";
-    popup.style.border = "1px solid #ccc";
-    popup.style.borderRadius = "10px";
-    popup.style.padding = "20px";
-    popup.style.boxShadow = "0 4px 20px rgba(0,0,0,0.2)";
-    popup.style.zIndex = "10000";
-    popup.style.fontFamily = "sans-serif";
-    popup.style.transition = "all 0.3s ease";
+  root.appendChild(button);
 
-    popup.innerHTML = `
-      <form id="missedleads-form">
-        <h3 style="margin-top:0;margin-bottom:12px;">Contact Us</h3>
-        <input name="name" placeholder="Name" style="width:100%;margin-bottom:8px;padding:8px;border:1px solid #ccc;border-radius:4px;">
-        <input name="email" placeholder="Email" style="width:100%;margin-bottom:8px;padding:8px;border:1px solid #ccc;border-radius:4px;">
-        <input name="phone" placeholder="Phone" style="width:100%;margin-bottom:8px;padding:8px;border:1px solid #ccc;border-radius:4px;">
-        <select name="urgency" style="width:100%;margin-bottom:8px;padding:8px;border:1px solid #ccc;border-radius:4px;">
-          <option value="">Select urgency</option>
-          <option value="High">High</option>
-          <option value="Medium">Medium</option>
-          <option value="Low">Low</option>
-        </select>
-        <textarea name="message" placeholder="Message" style="width:100%;margin-bottom:8px;padding:8px;border:1px solid #ccc;border-radius:4px;"></textarea>
-        <button type="submit" style="width:100%;padding:10px;background:#0070f3;color:white;border:none;border-radius:6px;cursor:pointer;">Send</button>
-      </form>
-    `;
+  /* ---------- Panel ---------- */
+  const panel = document.createElement("div");
+  Object.assign(panel.style, {
+    width: "100%",
+    height: "100%",
+    background: "white",
+    opacity: "0",
+    transform: "scale(0.9) translateY(20px)",
+    transition: "all 0.35s cubic-bezier(.4,0,.2,1)",
+    pointerEvents: "none",
+  });
 
-    document.body.appendChild(popup);
+  panel.innerHTML = `
+    <div style="padding:14px;border-bottom:1px solid #eee;font-weight:600">
+      Contact us
+    </div>
 
-    const form = popup.querySelector("form");
-    form.onsubmit = async (e) => {
-      e.preventDefault();
-      const formData = {
-        name: form.name.value,
-        email: form.email.value,
-        phone: form.phone.value,
-        urgency: form.urgency.value,
-        message: form.message.value,
-      };
+    <form style="padding:14px;display:flex;flex-direction:column;gap:8px">
+      <input name="name" placeholder="Name" required style="padding:8px;border:1px solid #ccc;border-radius:6px">
+      <input name="email" placeholder="Email" required style="padding:8px;border:1px solid #ccc;border-radius:6px">
+      <input name="phone" placeholder="Phone" style="padding:8px;border:1px solid #ccc;border-radius:6px">
+      <textarea name="message" placeholder="Message" rows="3"
+        style="padding:8px;border:1px solid #ccc;border-radius:6px"></textarea>
 
-      try {
-        const res = await fetch("https://missedleads.vercel.app/api/submit", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
-        });
+      <button type="submit"
+        style="margin-top:6px;padding:10px;border:none;border-radius:8px;
+        background:#0070f3;color:white;font-weight:600;cursor:pointer">
+        Send
+      </button>
+    </form>
+  `;
 
-        if (!res.ok) throw new Error(await res.text());
+  root.appendChild(panel);
 
-        alert("Message sent! Thank you.");
-        popup.remove();
-        popup = null;
-      } catch (err) {
-        console.error(err);
-        alert("Failed to send message. Please try again.");
-      }
-    };
+  /* ---------- Toggle ---------- */
+  root.onclick = () => {
+    open = !open;
+
+    if (open) {
+      root.style.width = "320px";
+      root.style.height = "420px";
+      root.style.background = "white";
+      root.style.borderRadius = "16px";
+
+      button.style.opacity = "0";
+
+      setTimeout(() => {
+        button.style.display = "none";
+        panel.style.opacity = "1";
+        panel.style.transform = "scale(1) translateY(0)";
+        panel.style.pointerEvents = "auto";
+      }, 120);
+    } else {
+      panel.style.opacity = "0";
+      panel.style.transform = "scale(0.9) translateY(20px)";
+      panel.style.pointerEvents = "none";
+
+      setTimeout(() => {
+        button.style.display = "flex";
+        button.style.opacity = "1";
+        root.style.width = "60px";
+        root.style.height = "60px";
+        root.style.background = "#0070f3";
+        root.style.borderRadius = "18px";
+      }, 200);
+    }
+  };
+
+  /* ---------- Submit (NO POPUPS) ---------- */
+  const form = panel.querySelector("form");
+
+  form.onsubmit = async (e) => {
+    e.preventDefault();
+
+    const data = Object.fromEntries(new FormData(form).entries());
+
+    try {
+      const res = await fetch("https://missedleads.vercel.app/api/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      if (!res.ok) return;
+
+      form.innerHTML = `
+        <div style="padding:30px;text-align:center;font-size:14px;color:#333">
+          Thanks — we’ll be in touch.
+        </div>
+      `;
+    } catch {
+      // intentionally silent — no alerts, no logs
+    }
   };
 })();
