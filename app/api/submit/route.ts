@@ -1,38 +1,44 @@
+// route.ts
 import { createClient } from "@supabase/supabase-js";
 
 const supabaseUrl = process.env.SUPABASE_URL!;
 const supabaseKey = process.env.SUPABASE_ANON_KEY!;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
+// Handle POST request
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
-
-    // Basic validation
-    const { name, email, phone, urgency, message } = body;
-    if (!message) {
-      return new Response(
-        JSON.stringify({ error: "Message is required" }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
-      );
-    }
+    const data = await req.json();
 
     // Insert into Supabase
-    const { data, error } = await supabase.from("submissions").insert([
-      { name, email, phone, urgency, message }
-    ]);
+    const { error } = await supabase.from("submissions").insert([data]);
 
-    if (error) throw error;
+    if (error) {
+      return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+    }
 
-    return new Response(JSON.stringify({ success: true, submission: data }), {
+    return new Response(JSON.stringify({ success: true }), {
       status: 200,
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*", // Allow all domains
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
+      },
     });
-  } catch (err) {
-    console.error("Submit API error:", err);
-    return new Response(JSON.stringify({ error: "Failed to submit inquiry" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+  } catch (err: any) {
+    return new Response(JSON.stringify({ error: err.message }), { status: 500 });
   }
+}
+
+// Handle OPTIONS preflight request
+export async function OPTIONS(req: Request) {
+  return new Response(null, {
+    status: 204,
+    headers: {
+      "Access-Control-Allow-Origin": "*", // Allow all domains
+      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type",
+    },
+  });
 }
