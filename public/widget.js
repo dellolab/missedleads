@@ -70,7 +70,7 @@
       };
 
       try {
-        const res = await fetch("https://your-vercel-deployment.vercel.app/api/submit", {
+        const res = await fetch("https://missedleads.vercel.app/api/submit", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(formData),
