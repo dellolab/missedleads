@@ -60,18 +60,27 @@
     </div>
 
     <form style="padding:14px;display:flex;flex-direction:column;gap:8px;flex:1">
-      <input name="name" placeholder="Name" required style="padding:8px;border:1px solid #ccc;border-radius:6px">
-      <input name="email" placeholder="Email" required style="padding:8px;border:1px solid #ccc;border-radius:6px">
-      <input name="phone" placeholder="Phone" style="padding:8px;border:1px solid #ccc;border-radius:6px">
-      <textarea name="message" placeholder="Message" rows="3"
-        style="padding:8px;border:1px solid #ccc;border-radius:6px"></textarea>
+  <input name="name" placeholder="Name" required style="padding:8px;border:1px solid #ccc;border-radius:6px">
+  <input name="email" placeholder="Email" required style="padding:8px;border:1px solid #ccc;border-radius:6px">
+  <input name="phone" placeholder="Phone" style="padding:8px;border:1px solid #ccc;border-radius:6px">
 
-      <button type="submit"
-        style="margin-top:6px;padding:10px;border:none;border-radius:8px;
-        background:#0070f3;color:white;font-weight:600;cursor:pointer">
-        Send
-      </button>
-    </form>
+  <!-- ---------- Urgency field ---------- -->
+  <select name="urgency" required style="padding:8px;border:1px solid #ccc;border-radius:6px">
+    <option value="">Select urgency</option>
+    <option value="High">High</option>
+    <option value="Medium">Medium</option>
+    <option value="Low">Low</option>
+  </select>
+
+  <textarea name="message" placeholder="Message" rows="3"
+    style="padding:8px;border:1px solid #ccc;border-radius:6px"></textarea>
+
+  <button type="submit"
+    style="margin-top:6px;padding:10px;border:none;border-radius:8px;
+    background:#0070f3;color:white;font-weight:600;cursor:pointer">
+    Send
+  </button>
+</form>
   `;
   root.appendChild(panel);
 
